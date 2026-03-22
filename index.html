@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Eyes Follow Finger</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: sans-serif;
+      touch-action: none;
+    }
+
+    h1 {
+      color: #555;
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+      user-select: none;
+    }
+
+    .character {
+      position: relative;
+      width: 220px;
+      height: 320px;
+      user-select: none;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
+    }
+
+    .hint {
+      margin-top: 2rem;
+      color: #777;
+      font-size: 0.85rem;
+      opacity: 0.8;
+      user-select: none;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Touch &amp; Drag to Move My Eyes!</h1>
+
+  <div class="character">
+    <svg id="character-svg" viewBox="0 0 220 320" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Body -->
+      <ellipse cx="110" cy="250" rx="65" ry="75" fill="#FFD166" />
+
+      <!-- Shirt collar detail -->
+      <ellipse cx="110" cy="255" rx="40" ry="48" fill="#EF476F" />
+      <polygon points="90,225 110,255 130,225" fill="#FFD166" />
+
+      <!-- Ears -->
+      <ellipse cx="42" cy="130" rx="16" ry="20" fill="#FFD166" />
+      <ellipse cx="42" cy="130" rx="9" ry="13" fill="#FFBA8A" />
+      <ellipse cx="178" cy="130" rx="16" ry="20" fill="#FFD166" />
+      <ellipse cx="178" cy="130" rx="9" ry="13" fill="#FFBA8A" />
+
+      <!-- Head -->
+      <ellipse cx="110" cy="120" rx="75" ry="85" fill="#FFD166" />
+
+      <!-- Hair -->
+      <ellipse cx="110" cy="45" rx="72" ry="30" fill="#5C3D2E" />
+      <ellipse cx="50" cy="65" rx="22" ry="30" fill="#5C3D2E" />
+      <ellipse cx="170" cy="65" rx="22" ry="30" fill="#5C3D2E" />
+      <rect x="38" y="50" width="144" height="20" fill="#5C3D2E" />
+
+      <!-- Eyebrows -->
+      <path d="M65 85 Q80 78 95 85" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round" />
+      <path d="M125 85 Q140 78 155 85" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round" />
+
+      <!-- Left eye socket -->
+      <ellipse cx="80" cy="112" rx="22" ry="20" fill="white" />
+      <!-- Right eye socket -->
+      <ellipse cx="140" cy="112" rx="22" ry="20" fill="white" />
+
+      <!-- Left iris + pupil (animated via JS) -->
+      <g id="left-eye">
+        <circle id="left-iris" cx="80" cy="112" r="13" fill="#3D5A80" />
+        <circle id="left-pupil" cx="80" cy="112" r="7" fill="#1a1a2e" />
+        <circle id="left-shine" cx="84" cy="108" r="3" fill="white" opacity="0.9" />
+      </g>
+
+      <!-- Right iris + pupil (animated via JS) -->
+      <g id="right-eye">
+        <circle id="right-iris" cx="140" cy="112" r="13" fill="#3D5A80" />
+        <circle id="right-pupil" cx="140" cy="112" r="7" fill="#1a1a2e" />
+        <circle id="right-shine" cx="144" cy="108" r="3" fill="white" opacity="0.9" />
+      </g>
+
+      <!-- Nose -->
+      <ellipse cx="110" cy="140" rx="8" ry="5" fill="#e8a87c" />
+
+      <!-- Mouth – smile -->
+      <path d="M85 162 Q110 182 135 162" stroke="#5C3D2E" stroke-width="4" fill="none" stroke-linecap="round" />
+
+      <!-- Cheek blush -->
+      <ellipse cx="62" cy="150" rx="14" ry="9" fill="#FF8FA3" opacity="0.4" />
+      <ellipse cx="158" cy="150" rx="14" ry="9" fill="#FF8FA3" opacity="0.4" />
+
+      <!-- Arms -->
+      <ellipse cx="45" cy="265" rx="18" ry="45" fill="#FFD166" transform="rotate(-15 45 265)" />
+      <ellipse cx="175" cy="265" rx="18" ry="45" fill="#FFD166" transform="rotate(15 175 265)" />
+
+      <!-- Legs -->
+      <rect x="78" y="310" width="28" height="50" rx="14" fill="#EF476F" />
+      <rect x="114" y="310" width="28" height="50" rx="14" fill="#EF476F" />
+
+      <!-- Shoes -->
+      <ellipse cx="92" cy="358" rx="22" ry="12" fill="#5C3D2E" />
+      <ellipse cx="128" cy="358" rx="22" ry="12" fill="#5C3D2E" />
+
+    </svg>
+  </div>
+
+  <p class="hint">Touch or drag anywhere on the screen</p>
+
+  <script>
+    const SVG_ID = 'character-svg';
+    const MAX_OFFSET = 8; // max px the iris can move from center
+
+    // Centers of each eye socket in SVG viewBox coordinates
+    const eyes = [
+      {
+        socketCx: 80, socketCy: 112, socketR: 9,   // clamp radius for iris center
+        iris:   document.getElementById('left-iris'),
+        pupil:  document.getElementById('left-pupil'),
+        shine:  document.getElementById('left-shine'),
+      },
+      {
+        socketCx: 140, socketCy: 112, socketR: 9,
+        iris:   document.getElementById('right-iris'),
+        pupil:  document.getElementById('right-pupil'),
+        shine:  document.getElementById('right-shine'),
+      },
+    ];
+
+    const svgEl = document.getElementById(SVG_ID);
+
+    function svgPoint(clientX, clientY) {
+      const pt = svgEl.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      return pt.matrixTransform(svgEl.getScreenCTM().inverse());
+    }
+
+    function moveEyes(clientX, clientY) {
+      const { x: px, y: py } = svgPoint(clientX, clientY);
+
+      eyes.forEach(eye => {
+        const dx = px - eye.socketCx;
+        const dy = py - eye.socketCy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const clamp = Math.min(dist, eye.socketR);
+        const nx = eye.socketCx + (dx / dist) * clamp;
+        const ny = eye.socketCy + (dy / dist) * clamp;
+
+        // Iris
+        eye.iris.setAttribute('cx', nx);
+        eye.iris.setAttribute('cy', ny);
+        // Pupil — same center
+        eye.pupil.setAttribute('cx', nx);
+        eye.pupil.setAttribute('cy', ny);
+        // Shine — offset slightly up-right
+        eye.shine.setAttribute('cx', nx + 4);
+        eye.shine.setAttribute('cy', ny - 4);
+      });
+    }
+
+    // Mouse events
+    document.addEventListener('mousemove', e => moveEyes(e.clientX, e.clientY));
+
+    // Touch events
+    document.addEventListener('touchstart',  e => { e.preventDefault(); moveEyes(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    document.addEventListener('touchmove',   e => { e.preventDefault(); moveEyes(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+    document.addEventListener('touchend',    () => {
+      // reset to center
+      eyes.forEach(eye => {
+        eye.iris.setAttribute('cx',  eye.socketCx);
+        eye.iris.setAttribute('cy',  eye.socketCy);
+        eye.pupil.setAttribute('cx', eye.socketCx);
+        eye.pupil.setAttribute('cy', eye.socketCy);
+        eye.shine.setAttribute('cx', eye.socketCx + 4);
+        eye.shine.setAttribute('cy', eye.socketCy - 4);
+      });
+    });
+  </script>
+</body>
+</html>
