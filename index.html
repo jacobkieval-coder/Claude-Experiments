@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Eyes Follow Finger</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Eye Guy" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+  <meta name="theme-color" content="#a8edea" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -204,6 +210,11 @@
         eye.shine.setAttribute('cy', eye.socketCy - 4);
       });
     });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
   </script>
 </body>
 </html>
