@@ -510,33 +510,55 @@ function sndFire() {
   } catch(e){}
 }
 
-// ─── Voice (Web Speech API — most natural, works on mobile) ──
-let _voices = [];
-function _loadVoices() {
-  _voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-}
-if (window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = _loadVoices;
-  _loadVoices();
-}
-
+// ─── Voice ───────────────────────────────────────────────────
+// Try Web Speech API (works on many devices)
 function speakVoice(text, pitch, rate) {
   try {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.pitch = pitch; u.rate = rate; u.volume = 1;
-    if (!_voices.length) _loadVoices();
-    const v = _voices.find(v => /male/i.test(v.name) && v.lang.startsWith('en'))
-           || _voices.find(v => v.lang.startsWith('en'))
-           || _voices[0];
-    if (v) u.voice = v;
     window.speechSynthesis.speak(u);
   } catch(e) {}
 }
 
-function sndOohYeahBaby() { speakVoice('Ooh yeah baby', 0.5, 0.82); }
-function sndMmmm()        { speakVoice('Mmmmmm',        0.4, 0.55); }
+// Web Audio fallback: sawtooth → lowpass shaped into syllable rhythm.
+// Lowpass (not narrow bandpass) passes far more energy → audible on phone speakers.
+function voiceBuzz(gains, pitchStart, pitchEnd, totalDur, lpFreq) {
+  try {
+    const c = ac(), t = c.currentTime;
+    const osc = c.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(pitchStart, t);
+    osc.frequency.linearRampToValueAtTime(pitchEnd, t + totalDur);
+    const flt = c.createBiquadFilter();
+    flt.type = 'lowpass'; flt.frequency.value = lpFreq; flt.Q.value = 1;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0, t);
+    gains.forEach(([time, val]) => g.gain.linearRampToValueAtTime(val, t + time));
+    osc.connect(flt); flt.connect(g); g.connect(c.destination);
+    osc.start(t); osc.stop(t + totalDur + 0.05);
+  } catch(e) {}
+}
+
+function sndOohYeahBaby() {
+  // Syllable envelope: Ooh | yeah | ba | by
+  voiceBuzz([
+    [0.07,0.6],[0.38,0.6],[0.43,0],   // Ooh
+    [0.50,0.6],[0.82,0.6],[0.87,0],   // yeah
+    [0.93,0.55],[1.10,0.55],[1.15,0], // ba
+    [1.21,0.55],[1.48,0.55],[1.56,0]  // by
+  ], 110, 95, 1.6, 1400);
+  speakVoice('Ooh yeah baby', 0.5, 0.82);
+}
+
+function sndMmmm() {
+  // Sustained satisfied hum
+  voiceBuzz([
+    [0.07,0.7],[0.85,0.7],[1.05,0]
+  ], 90, 85, 1.1, 900);
+  speakVoice('Mmmmmm', 0.4, 0.55);
+}
 
 // ─── Face states ─────────────────────────────────────────────
 function setFace(state) {
