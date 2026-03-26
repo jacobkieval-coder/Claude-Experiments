@@ -171,89 +171,15 @@ body::before {
   height: clamp(128px, 34vw, 168px);
 }
 
-#aron-img {
+#aron-svg {
   width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center 18%;
+  display: block;
   border-radius: 50%;
   border: 3px solid #ffd700;
   box-shadow: 0 0 28px rgba(255,165,0,.45), 0 0 55px rgba(255,80,0,.2);
-  display: block;
+  overflow: hidden;
 }
 
-#aron-fallback {
-  display: none;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  border: 3px solid #ffd700;
-  background: linear-gradient(135deg, #3a1870, #180a3d);
-  align-items: center; justify-content: center;
-  font-size: 65px;
-  box-shadow: 0 0 28px rgba(255,165,0,.45);
-}
-
-/* expression overlays */
-#expr {
-  position: absolute; inset: 0;
-  border-radius: 50%; overflow: hidden;
-  pointer-events: none;
-}
-#joy-tint {
-  position: absolute; inset: 0;
-  background: radial-gradient(circle, rgba(255,40,0,.32) 0%, transparent 72%);
-  opacity: 0; transition: opacity .1s; mix-blend-mode: screen;
-}
-#egg-tint {
-  position: absolute; inset: 0;
-  background: radial-gradient(circle, rgba(255,220,0,.25) 0%, transparent 72%);
-  opacity: 0; transition: opacity .1s; mix-blend-mode: screen;
-}
-#tongue {
-  position: absolute;
-  bottom: 20%; left: 50%;
-  font-size: clamp(20px, 5.5vw, 27px);
-  transform: translateX(-50%) scaleY(0);
-  transform-origin: top center;
-  z-index: 5;
-}
-#tongue.lick { animation: lick .95s ease-in-out forwards; }
-@keyframes lick {
-  0%   { transform: translateX(-50%) scaleY(0); }
-  28%  { transform: translateX(-62%) scaleY(1.1) rotate(-18deg); }
-  55%  { transform: translateX(-38%) scaleY(1) rotate(18deg); }
-  78%  { transform: translateX(-56%) scaleY(.85) rotate(-10deg); }
-  100% { transform: translateX(-50%) scaleY(0); }
-}
-#lipsync {
-  position: absolute;
-  bottom: 23%; left: 50%;
-  transform: translateX(-50%);
-  width: 27%; height: 0;
-  background: rgba(80,0,0,.72);
-  border-radius: 4px;
-  transition: height .07s, width .07s;
-  z-index: 4;
-}
-
-/* face animation */
-@keyframes joy-anim {
-  0%   { transform: scale(1) rotate(0deg);    filter: brightness(1) saturate(1); }
-  18%  { transform: scale(1.1) rotate(-4deg); filter: brightness(1.45) saturate(1.9) hue-rotate(12deg); }
-  36%  { transform: scale(1.13) rotate(3.5deg); filter: brightness(1.55) saturate(2.1) hue-rotate(-6deg); }
-  52%  { transform: scale(1.09) rotate(-2.5deg); filter: brightness(1.4) saturate(1.7) hue-rotate(8deg); }
-  70%  { transform: scale(1.1) rotate(2deg);  filter: brightness(1.3) saturate(1.4); }
-  88%  { transform: scale(1.03) rotate(-1deg); filter: brightness(1.15) saturate(1.2); }
-  100% { transform: scale(1) rotate(0deg);    filter: brightness(1) saturate(1); }
-}
-@keyframes egg-anim {
-  0%   { transform: scale(1);      filter: brightness(1) saturate(1); }
-  22%  { transform: scale(1.07);   filter: brightness(1.28) saturate(1.45) hue-rotate(-18deg); }
-  55%  { transform: scale(1.09);   filter: brightness(1.35) saturate(1.6) hue-rotate(-22deg); }
-  82%  { transform: scale(1.05);   filter: brightness(1.2) saturate(1.3) hue-rotate(-12deg); }
-  100% { transform: scale(1);      filter: brightness(1) saturate(1); }
-}
-#aron-img.joy  { animation: joy-anim  1.15s ease-in-out forwards; }
-#aron-img.eggs { animation: egg-anim  1.15s ease-in-out forwards; }
 
 /* ── Streak text ── */
 #streak-text {
@@ -392,15 +318,75 @@ body::before {
     <!-- CENTER: Aron -->
     <div id="aron-col">
       <div id="aron-wrap">
-        <img id="aron-img" src="aron.jpg" alt="Aron"
-             onerror="this.style.display='none';document.getElementById('aron-fallback').style.display='flex'">
-        <div id="aron-fallback">😲</div>
-        <div id="expr">
-          <div id="joy-tint"></div>
-          <div id="egg-tint"></div>
-          <div id="tongue">👅</div>
-          <div id="lipsync"></div>
-        </div>
+        <svg id="aron-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Neck -->
+          <rect x="82" y="180" width="36" height="20" rx="9" fill="#f0c090"/>
+          <!-- Ears -->
+          <ellipse cx="41" cy="115" rx="12" ry="17" fill="#f0c090"/>
+          <ellipse cx="159" cy="115" rx="12" ry="17" fill="#f0c090"/>
+          <ellipse cx="42" cy="115" rx="7" ry="11" fill="#d89068"/>
+          <ellipse cx="158" cy="115" rx="7" ry="11" fill="#d89068"/>
+          <!-- Hair (drawn first, face covers lower portion) -->
+          <path d="M38 103 C32 73 38 43 56 27 C70 15 85 10 100 10 C115 10 130 15 144 27 C162 43 168 73 162 103 C150 67 128 51 100 49 C72 51 50 67 38 103Z" fill="#2a1205"/>
+          <path d="M54 68 Q70 51 100 48 Q130 51 146 68 Q128 49 100 46 Q72 49 54 68Z" fill="#1a0c03"/>
+          <!-- Face skin -->
+          <ellipse cx="100" cy="115" rx="58" ry="73" fill="#f0c090"/>
+          <!-- Sideburns -->
+          <rect x="41" y="100" width="13" height="35" rx="4" fill="#2a1205"/>
+          <rect x="146" y="100" width="13" height="35" rx="4" fill="#2a1205"/>
+          <!-- Beard -->
+          <path d="M55 132 C50 153 54 172 68 183 C78 189 89 191 100 191 C111 191 122 189 132 183 C146 172 150 153 145 132 C130 147 118 153 100 154 C82 153 70 147 55 132Z" fill="#5a2a0e"/>
+          <path d="M62 136 C57 155 61 170 74 180 C83 185 91 187 100 187 C109 187 117 185 126 180 C139 170 143 155 138 136 C124 149 114 153 100 154 C86 153 76 149 62 136Z" fill="#3d1a06"/>
+          <!-- Mustache -->
+          <path d="M63 129 Q72 121 100 124 Q128 121 137 129 Q125 125 100 127 Q75 125 63 129Z" fill="#3d1a06"/>
+          <!-- Nose -->
+          <path d="M100 100 C97 110 93 119 94 125 C96 129 100 130 100 130 C100 130 104 129 106 125 C107 119 103 110 100 100Z" fill="#d89068"/>
+          <ellipse cx="94" cy="126" rx="5" ry="3" fill="#c07858"/>
+          <ellipse cx="106" cy="126" rx="5" ry="3" fill="#c07858"/>
+
+          <!-- NORMAL face state -->
+          <g id="face-normal">
+            <path d="M50 89 Q62 81 74 86" stroke="#2a1205" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M126 86 Q138 81 150 89" stroke="#2a1205" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="72" cy="103" rx="13" ry="13" fill="white"/>
+            <circle cx="73" cy="104" r="8" fill="#3d2010"/>
+            <circle cx="70" cy="101" r="3" fill="white" opacity="0.7"/>
+            <ellipse cx="128" cy="103" rx="13" ry="13" fill="white"/>
+            <circle cx="127" cy="104" r="8" fill="#3d2010"/>
+            <circle cx="124" cy="101" r="3" fill="white" opacity="0.7"/>
+            <path d="M80 142 Q100 152 120 142" stroke="#a04030" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <!-- EXCITED face state (laptop pressed) -->
+          <g id="face-excited" style="display:none">
+            <path d="M50 82 Q62 72 74 78" stroke="#2a1205" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+            <path d="M126 78 Q138 72 150 82" stroke="#2a1205" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+            <ellipse cx="72" cy="101" rx="16" ry="17" fill="white"/>
+            <circle cx="73" cy="102" r="10" fill="#3d2010"/>
+            <circle cx="69" cy="97" r="4" fill="white" opacity="0.8"/>
+            <ellipse cx="128" cy="101" rx="16" ry="17" fill="white"/>
+            <circle cx="127" cy="102" r="10" fill="#3d2010"/>
+            <circle cx="123" cy="97" r="4" fill="white" opacity="0.8"/>
+            <ellipse cx="100" cy="149" rx="21" ry="17" fill="#220808"/>
+            <rect x="81" y="138" width="38" height="12" rx="5" fill="#f5f5ee"/>
+            <ellipse cx="100" cy="159" rx="15" ry="9" fill="#e83060"/>
+          </g>
+
+          <!-- SATISFIED face state (egg pressed) -->
+          <g id="face-satisfied" style="display:none">
+            <path d="M50 89 Q62 81 74 86" stroke="#2a1205" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M126 86 Q138 81 150 89" stroke="#2a1205" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M59 103 Q72 113 85 103 Q72 97 59 103Z" fill="#f0c090"/>
+            <path d="M59 103 Q72 113 85 103" stroke="#3d2010" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <path d="M115 103 Q128 113 141 103 Q128 97 115 103Z" fill="#f0c090"/>
+            <path d="M115 103 Q128 113 141 103" stroke="#3d2010" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <path d="M66 140 Q100 166 134 140 Q118 162 100 164 Q82 162 66 140Z" fill="#c8304a"/>
+            <path d="M66 140 Q100 151 134 140 Q118 147 100 149 Q82 147 66 140Z" fill="#f0a0a8"/>
+            <path d="M81 141 Q100 136 119 141 Q110 148 100 149 Q90 148 81 141Z" fill="#e84060"/>
+            <ellipse cx="50" cy="120" rx="14" ry="9" fill="#f07060" opacity="0.28"/>
+            <ellipse cx="150" cy="120" rx="14" ry="9" fill="#f07060" opacity="0.28"/>
+          </g>
+        </svg>
       </div>
     </div>
 
@@ -510,40 +496,11 @@ function sndFire() {
   } catch(e){}
 }
 
-// ─── Speech ──────────────────────────────────────────────────
-function speak(text, pitch, rate, lipDur) {
-  try {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.pitch = pitch; u.rate = rate; u.volume = 1;
-    const voices = window.speechSynthesis.getVoices();
-    const pick = voices.find(v => /male/i.test(v.name) && v.lang.startsWith('en'))
-              || voices.find(v => v.lang.startsWith('en'));
-    if (pick) u.voice = pick;
-    window.speechSynthesis.speak(u);
-    if (lipDur) animateLips(lipDur);
-  } catch(e){}
-}
-
-// ─── Lip sync ─────────────────────────────────────────────────
-let lipTimer = null;
-function animateLips(ms) {
-  const el = $('lipsync');
-  if (lipTimer) clearInterval(lipTimer);
-  const steps = ms / 75 | 0;
-  let i = 0;
-  lipTimer = setInterval(() => {
-    if (i++ >= steps) {
-      clearInterval(lipTimer); lipTimer = null;
-      el.style.height = '0'; el.style.width = '27%'; return;
-    }
-    if (Math.random() > .3) {
-      el.style.height = (Math.random()*13+4) + 'px';
-      el.style.width  = (Math.random()*14+20) + '%';
-    } else {
-      el.style.height = '0';
-    }
-  }, 75);
+// ─── Face states ─────────────────────────────────────────────
+function setFace(state) {
+  ['normal','excited','satisfied'].forEach(s => {
+    $('face-' + s).style.display = s === state ? '' : 'none';
+  });
 }
 
 // ─── Fire ring builder ────────────────────────────────────────
@@ -617,27 +574,13 @@ function pick(evt, type) {
   // 3. Streak
   handleStreak(type);
 
-  // 4. Face + voice
-  const img = $('aron-img');
-  img.classList.remove('joy','eggs');
-  void img.offsetWidth; // reflow
-
+  // 4. Face
   if (type === 'porn') {
-    img.classList.add('joy');
-    $('joy-tint').style.opacity = '1';
-    speak('Ohhh, yeah', .62, .52, 1450);
-    setTimeout(() => { img.classList.remove('joy'); $('joy-tint').style.opacity='0'; }, 1200);
+    setFace('excited');
+    setTimeout(() => setFace('normal'), 1200);
   } else {
-    img.classList.add('eggs');
-    $('egg-tint').style.opacity = '1';
-    speak('Mmmm!', .78, .48, 0);
-    const t = $('tongue');
-    t.classList.remove('lick'); void t.offsetWidth; t.classList.add('lick');
-    setTimeout(() => {
-      t.classList.remove('lick');
-      img.classList.remove('eggs');
-      $('egg-tint').style.opacity = '0';
-    }, 1200);
+    setFace('satisfied');
+    setTimeout(() => setFace('normal'), 1200);
   }
 
   // 5. Fade → advance morn
@@ -755,11 +698,6 @@ document.addEventListener('DOMContentLoaded', () => {
     stars.appendChild(s);
   }
 
-  // Pre-warm speech voices
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-  }
 });
 </script>
 </body>
