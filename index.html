@@ -496,6 +496,61 @@ function sndFire() {
   } catch(e){}
 }
 
+// ─── Voice synthesis ─────────────────────────────────────────
+// Sawtooth oscillator through two bandpass filters = formant vowel sounds
+function phoneme(ctx, now, start, dur, pitch, f1, f2, gain) {
+  const osc = ctx.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.value = pitch;
+  const b1 = ctx.createBiquadFilter();
+  b1.type = 'bandpass'; b1.frequency.value = f1; b1.Q.value = 4;
+  const b2 = ctx.createBiquadFilter();
+  b2.type = 'bandpass'; b2.frequency.value = f2; b2.Q.value = 5;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, now + start);
+  g.gain.linearRampToValueAtTime(gain, now + start + 0.06);
+  g.gain.setValueAtTime(gain, now + start + dur - 0.07);
+  g.gain.linearRampToValueAtTime(0, now + start + dur);
+  osc.connect(b1); b1.connect(g);
+  osc.connect(b2); b2.connect(g);
+  g.connect(ctx.destination);
+  osc.start(now + start); osc.stop(now + start + dur);
+}
+
+function sndOohYeahBaby() {
+  try {
+    const c = ac(), t = c.currentTime;
+    // "Ooh"  - rounded back vowel
+    phoneme(c, t, 0.00, 0.40, 100, 300,  870,  0.22);
+    // "yeah" - front open vowel, rising pitch
+    phoneme(c, t, 0.42, 0.38, 112, 800,  1200, 0.22);
+    // "ba-"  - open vowel
+    phoneme(c, t, 0.83, 0.22, 100, 700,  1000, 0.18);
+    // "-by"  - back close vowel, pitch falls
+    phoneme(c, t, 1.07, 0.35,  88, 280,  840,  0.18);
+  } catch(e) {}
+}
+
+function sndMmmm() {
+  try {
+    const c = ac(), t = c.currentTime;
+    const osc = c.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(90, t);
+    osc.frequency.linearRampToValueAtTime(108, t + 0.3);
+    osc.frequency.linearRampToValueAtTime(85,  t + 0.9);
+    const flt = c.createBiquadFilter();
+    flt.type = 'bandpass'; flt.frequency.value = 260; flt.Q.value = 3;
+    const g = c.createGain();
+    g.gain.setValueAtTime(0,    t);
+    g.gain.linearRampToValueAtTime(0.26, t + 0.07);
+    g.gain.setValueAtTime(0.26, t + 0.75);
+    g.gain.linearRampToValueAtTime(0,    t + 0.95);
+    osc.connect(flt); flt.connect(g); g.connect(c.destination);
+    osc.start(t); osc.stop(t + 0.95);
+  } catch(e) {}
+}
+
 // ─── Face states ─────────────────────────────────────────────
 function setFace(state) {
   ['normal','excited','satisfied'].forEach(s => {
@@ -574,12 +629,14 @@ function pick(evt, type) {
   // 3. Streak
   handleStreak(type);
 
-  // 4. Face
+  // 4. Face + voice
   if (type === 'porn') {
     setFace('excited');
+    sndOohYeahBaby();
     setTimeout(() => setFace('normal'), 1200);
   } else {
     setFace('satisfied');
+    sndMmmm();
     setTimeout(() => setFace('normal'), 1200);
   }
 
