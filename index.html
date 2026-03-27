@@ -462,14 +462,18 @@ const sfxPrn = new Audio('aron_prn.wav');
 const sfxEgg = new Audio('aron_egg.wav');
 sfxPrn.preload = 'auto';
 sfxEgg.preload = 'auto';
+sfxPrn.addEventListener('error', (e) => console.error('aron_prn.wav failed to load', sfxPrn.error));
+sfxEgg.addEventListener('error', (e) => console.error('aron_egg.wav failed to load', sfxEgg.error));
+sfxPrn.addEventListener('canplaythrough', () => console.log('aron_prn.wav ready'));
+sfxEgg.addEventListener('canplaythrough', () => console.log('aron_egg.wav ready'));
 
 function sndOohYeahBaby() {
   sfxPrn.currentTime = 0;
-  sfxPrn.play().catch(() => {});
+  sfxPrn.play().catch((e) => console.error('prn play() failed:', e));
 }
 function sndMmmm() {
   sfxEgg.currentTime = 0;
-  sfxEgg.play().catch(() => {});
+  sfxEgg.play().catch((e) => console.error('egg play() failed:', e));
 }
 
 // ─── Face states ─────────────────────────────────────────────
