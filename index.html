@@ -458,16 +458,18 @@ let lastPickTime = 0;
 let lastPickType = '';
 
 // ─── Audio ───────────────────────────────────────────────────
-const sfxPrn = new Audio('aron prn.wav');
-const sfxEgg = new Audio('aron egg.wav');
+const sfxPrn = new Audio('aron%20prn.wav');
+const sfxEgg = new Audio('aron%20egg.wav');
 sfxPrn.preload = 'auto';
 sfxEgg.preload = 'auto';
 
 function sndOohYeahBaby() {
-  try { sfxPrn.currentTime = 0; sfxPrn.play(); } catch(e) {}
+  sfxPrn.currentTime = 0;
+  sfxPrn.play().catch(() => {});
 }
 function sndMmmm() {
-  try { sfxEgg.currentTime = 0; sfxEgg.play(); } catch(e) {}
+  sfxEgg.currentTime = 0;
+  sfxEgg.play().catch(() => {});
 }
 
 // ─── Face states ─────────────────────────────────────────────
